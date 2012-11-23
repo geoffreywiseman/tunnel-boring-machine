@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require 'tunnels'
+Tunnels::CommandLineInterface.parse_and_run
