@@ -1,4 +1,4 @@
-module Tunnels
+module Tunnel
 	class Target
 		attr_reader :name, :host, :username
 

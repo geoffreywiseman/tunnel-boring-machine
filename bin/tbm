@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'tbm'
+
+Tunnel::CommandLineInterface.parse_and_run

@@ -1,6 +1,7 @@
 require 'etc'
+require 'yaml'
 
-module Tunnels
+module Tunnel
 	class Config
 		CONFIG_FILE = File.expand_path( '~/.tunnels' )
 
@@ -11,7 +12,6 @@ module Tunnels
 				config_data = YAML.load_file( CONFIG_FILE )
 				parse config_data if config_data.is_a? Hash
 			else
-				puts "File exists? #{File.exists? CONFIG_FILE} Is a file? #{File.file? CONFIG_FILE}"
 				puts "Configure your tunnels in ~/.tunnels in YAML form."
 			end
 		end

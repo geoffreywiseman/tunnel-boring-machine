@@ -1,6 +1,6 @@
 require 'net/ssh'
 
-module Tunnels
+module Tunnel
 	class CommandLineInterface
 		def initialize( config )
 			@config = config
@@ -10,7 +10,7 @@ module Tunnels
 
 		def parse
 			if ARGV.size != 1 
-				print_targets "SYNTAX: tunnels <target>\n\nWhere target is one of:" 
+				print_targets "SYNTAX: tbm <target>\n\nWhere target is one of:" 
 			else
 				target_name = ARGV[0]
 				@target = @config.get_target( target_name )
@@ -28,8 +28,8 @@ module Tunnels
 			!@target.nil?
 		end
 
-		def open_tunnels
-			puts "Tunnels v#{VERSION}"
+		def bore
+			puts "Starting #{APP_NAME} v#{VERSION}"
 			puts
 
 			trap("INT") { @cancelled = true }
@@ -37,12 +37,12 @@ module Tunnels
 				forward_ports( session )
 			end
 
-			puts "Tunnels closed."
+			puts "Shutting down the machine."
 		end
 
 		def forward_ports( session )
 			begin
-				puts "Opened connection #{@target.username}@#{@target.host}:"
+				puts "Opened connection to #{@target.username}@#{@target.host}:"
 				@target.each_forward do |fwd|
 					remote_server, port = fwd
 					session.forward.local( port, remote_server, port )
@@ -62,7 +62,7 @@ module Tunnels
 			if config.valid? 
 				cli = CommandLineInterface.new( config )
 				cli.parse
-				cli.open_tunnels if cli.valid?
+				cli.bore if cli.valid?
 			end
 		end
 	end
