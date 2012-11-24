@@ -4,42 +4,57 @@ module Tunnels
 	class CommandLineInterface
 		def initialize( config )
 			@config = config
-			@targets = []
+			@target = nil
+			@cancelled = false
 		end
 
 		def parse
-			if ARGV.empty? 
-				puts "SYNTAX: tunnels <name>"
-				puts "Where name is one of:"
-				@config.each_target { |name| puts "\t#{name}" }
+			if ARGV.size != 1 
+				print_targets "SYNTAX: tunnels <target>\n\nWhere target is one of:" 
 			else
-				@targets += ARGV
+				target_name = ARGV[0]
+				@target = @config.get_target( target_name )
+				print_targets( "Cannot find target: #{target_name}\n\nThese are the targets currently defined:" ) if @target.nil?
 			end
 		end
 
+		def print_targets( message )
+			puts message
+			@config.each_target { |target| puts "\t#{target.name}" }
+		end
+
+
 		def valid?
-			missing_targets = @targets.select { |t| !@config.has_target?(t) }
-			puts "Cannot find target(s): #{missing_targets}" unless missing_targets.empty?
-			!@targets.empty? && missing_targets.empty?
+			!@target.nil?
 		end
 
 		def open_tunnels
 			puts "Tunnels v#{VERSION}"
 			puts
 
-			puts "TODO: Open Tunnel"
-			# Net::SSH.start( host, username ) do |session|
-				# puts "Opened connection to Host."
-				# session.forward.local( 8888, 'localhost', 8888 )
-				# puts "Tunnel open for 8888"
-				# int_pressed = false
-				# trap("INT") { int_pressed = true }
-				# puts "Waiting for Ctrl-C"
-				# session.loop(0.1) { not int_pressed }
-				# puts "Ctrl-C pressed. Exiting."
-			# end
+			trap("INT") { @cancelled = true }
+			Net::SSH.start( @target.host, @target.username ) do |session|
+				forward_ports( session )
+			end
 
 			puts "Tunnels closed."
+		end
+
+		def forward_ports( session )
+			begin
+				puts "Opened connection #{@target.username}@#{@target.host}:"
+				@target.each_forward do |fwd|
+					remote_server, port = fwd
+					session.forward.local( port, remote_server, port )
+					puts "\tforwarded port #{port} to #{remote_server}:#{port}"
+				end
+				puts "\twaiting for Ctrl-C..."
+				session.loop(0.1) { not @cancelled }
+				puts "\n\tCtrl-C pressed. Exiting."
+			rescue Errno::EACCES
+				@cancelled = true
+				puts "\tCould not open all ports; you may need to sudo if port < 1000."
+			end
 		end
 
 		def self.parse_and_run
