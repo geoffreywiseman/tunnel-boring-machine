@@ -1,4 +1,4 @@
 Gemfile.lock
-tunnels.sublime-project
-tunnels.sublime-workspace
+*.sublime-project
+*.sublime-workspace
 pkg

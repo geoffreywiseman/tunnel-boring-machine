@@ -41,6 +41,7 @@ module Tunnel
 				unless target.nil? 
 					@targets << target
 					parse_forward( target, config['forward'] )
+					parse_alias( target, config['alias'] )
 				end
 			else
 				puts "Cannot parse target '#{name}' (#{config.class})"
@@ -85,6 +86,20 @@ module Tunnel
 				end
 			else
 				puts "Not sure how to handle forward for '#{target.host}': #{config.class}"
+				@valid = false
+			end
+		end
+
+		def parse_alias( target, config )
+			case config
+			when nil
+				# No alias.
+			when Array
+				config.each { |name| target.alias( name ) }
+			when String
+				target.alias( config )
+			else
+				puts "Cannot handle alias of type: #{config.class}"
 				@valid = false
 			end
 		end

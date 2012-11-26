@@ -20,7 +20,7 @@ module Tunnel
 
 		def print_targets( message )
 			puts message
-			@config.each_target { |target| puts "\t#{target.name}" }
+			@config.each_target { |target| puts "\t#{target.to_s}" }
 		end
 
 
