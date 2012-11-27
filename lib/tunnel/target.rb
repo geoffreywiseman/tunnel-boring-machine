@@ -19,8 +19,7 @@ module Tunnel
 		end
 
 		def has_name?( name )
-			@name==name
-			@aliases.include? name
+			( @name == name ) || ( @aliases.include? name )
 		end
 
 		def each_forward( &block )
