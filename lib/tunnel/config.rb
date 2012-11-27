@@ -10,7 +10,12 @@ module Tunnel
 			@targets = []
 			if File.file? CONFIG_FILE
 				config_data = YAML.load_file( CONFIG_FILE )
-				parse config_data if config_data.is_a? Hash
+				case config_data
+				when Hash
+					parse config_data if config_data.is_a? Hash
+				else
+					puts "Don't know how to parse config: #{config_data.class}"
+				end
 			else
 				puts "Configure your tunnels in ~/.tunnels in YAML form."
 			end
