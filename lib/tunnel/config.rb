@@ -4,9 +4,10 @@ require 'yaml'
 module Tunnel
 	class Config
 		CONFIG_FILE = File.expand_path( '~/.tunnels' )
+		attr_reader :errors
 
 		def initialize
-			@valid = nil
+			@errors = []
 			@targets = []
 			if File.file? CONFIG_FILE
 				config_data = YAML.load_file( CONFIG_FILE )
@@ -14,15 +15,15 @@ module Tunnel
 				when Hash
 					parse config_data if config_data.is_a? Hash
 				else
-					puts "Don't know how to parse config: #{config_data.class}"
+					@errors << "Cannot parse tunnel configuration of type: #{config_data.class}"
 				end
 			else
-				puts "Configure your tunnels in ~/.tunnels in YAML form."
+				@errors << "No configuration file found. Specify your tunnels in YAML form in: ~/.tunnels"
 			end
 		end
 
 		def valid?
-			@valid
+			@errors.empty?
 		end
 
 		def get_target( name )
@@ -37,7 +38,7 @@ module Tunnel
 
 		def parse( targets )
 			targets.each_key { |name| parse_target name, targets[name] }
-			@valid = true if @valid.nil? && !@targets.empty?
+			@errors << "No targets specified." if @targets.empty?
 		end
 
 		def parse_target( name, config )
@@ -49,8 +50,7 @@ module Tunnel
 					parse_alias( target, config['alias'] )
 				end
 			else
-				puts "Cannot parse target '#{name}' (#{config.class})"
-				@valid = false
+				@errors << "Cannot parse target '#{name}' (#{config.class})"
 			end
 		end
 
@@ -63,16 +63,14 @@ module Tunnel
 				end
 				Target.new name, config['host'], username
 			else
-				puts "Cannot parse target '#{name}': no host found."
-				@valid = false
+				@errors << "Cannot parse target '#{name}': no host found."
 			end
 		end
 
 		def parse_forward( target, config )
 			case config
 			when nil
-				puts "Target #{target.name} has no forwards defined."
-				@valid = false
+				@errors << "Target #{target.name} has no forwards defined."
 			when Fixnum
 				target.forward_port( config )
 			when Array
@@ -86,12 +84,11 @@ module Tunnel
 					when Array
 						server_config.each { |port| target.forward_port( port, server ) }
 					else
- 						puts "Not sure how to handle forward from #{target.host} to #{server}: #{server_config.class}"
+ 						@errors << "Not sure how to handle forward from #{target.host} to #{server}: #{server_config.class}"
  					end
 				end
 			else
-				puts "Not sure how to handle forward for '#{target.host}': #{config.class}"
-				@valid = false
+				@errors << "Not sure how to handle forward for '#{target.host}': #{config.class}"
 			end
 		end
 
@@ -104,8 +101,7 @@ module Tunnel
 			when String
 				target.alias( config )
 			else
-				puts "Cannot handle alias of type: #{config.class}"
-				@valid = false
+				@errors << "Cannot handle alias of type: #{config.class}"
 			end
 		end
 

@@ -1,29 +1,44 @@
 require 'tunnel/config'
+require 'tunnel/target'
 require 'rspec'
 
 describe Tunnel::Config do
-	CONFIG_FILE = File.expand_path( "~/.tunnels" )
+	let( :path ) { File.expand_path( "~/.tunnels" ) }
 
 	context "when config doesn't exist" do
 		before do
 			stub_messages
-			File.stub( :file? ).with( CONFIG_FILE ) { false }
+			File.stub( :file? ).with( path ) { false }
 		end
 
-		it "should say 'Configure your tunnels'" do
-			subject.should_not be_valid
-			@messages.should include_match /Configure your tunnels/
-		end
+		it { should_not be_valid }
+		specify { subject.errors.should include_match /No configuration file found/ }
 	end
 
 	context "when config file exists" do
-		it "should load config with YAML"
+		let(:config) { nil }
 
-		context "when config is not a hash" do
-			it "should warn that it can't parse config"
+		before do
+			File.stub( :file? ).with( path ) { true }
+			YAML.should_receive( :load_file ).with( path ) { config }
+		end
+
+		context "and config is not a hash" do
+			let(:config) { Array.new }
+			it { should_not be_valid }
+			specify { subject.errors.should include("Cannot parse tunnel configuration of type: Array") }
+		end
+
+		context "and config hash is empty" do
+			let(:config) { Hash.new }
+			it { should_not be_valid }
+			specify { subject.errors.should include_match(/No targets/) }
 		end
 
 		context "when config is a hash (of targets)" do
+			let(:target_name) { nil }
+			let(:target) { nil }
+			let(:config) { { target_name => target } }
 
 			context "when target config is not a hash" do
 				it "should warn that can't parse the target"
