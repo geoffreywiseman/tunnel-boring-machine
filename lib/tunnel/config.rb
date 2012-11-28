@@ -64,6 +64,7 @@ module Tunnel
 				Target.new name, config['host'], username
 			else
 				@errors << "Cannot parse target '#{name}': no host found."
+				return nil
 			end
 		end
 
