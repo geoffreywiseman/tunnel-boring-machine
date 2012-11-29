@@ -142,16 +142,50 @@ describe Tunnel::Config do
 
 					end
 
-					context "when target config has a an alias" do
-						it "should treat string as single alias"
-						it "should treat array as list of aliases"
-						it "should warn with any other content"
+					context "and an alias" do
+						let(:target) { { 'host' => 'host', 'username' => 'username', 'forward' => 8080 } }
+						let(:targetmock) { double(Tunnel::Target) }
+
+						before do
+							Tunnel::Target.stub(:new) { targetmock }
+							targetmock.stub(:forward_port)
+						end
+
+						it "should treat string as single alias" do
+							target['alias']= 'mr-smith'
+							targetmock.should_receive( :alias ).with( 'mr-smith' )
+							subject.should be_valid
+						end
+
+						it "should treat an array as a series of aliases" do
+							target['alias']= 'mr-smith'
+							targetmock.should_receive( :alias ).with( 'mr-smith' )
+							subject.should be_valid
+						end
+
+						it "should warn with any other content" do
+							target['alias'] = Hash.new
+							subject.should_not be_valid
+							subject.errors.should include_match( /Cannot parse alias/ )
+						end
 					end
 				end
 
 			end
 
-			it "should contain all targets specified"
+			context "containing a hash of five targets" do
+				let(:config) { { 'alpha' => { 'host' => 'host', 'forward' => 3001 }, 'beta' => { 'host' => 'host', 'forward' => 3002 }, 'gamma' => { 'host' => 'host', 'forward' => 3003 }, 'delta' => { 'host' => 'host', 'forward' => 3004 },
+					'omega' => { 'host' => 'host', 'forward' => 3005 } } }
+				it "should return all five targets specified" do
+					subject.should be_valid
+					subject.get_target( 'alpha' ).should be_instance_of(Tunnel::Target)
+					subject.get_target( 'beta' ).should be_instance_of(Tunnel::Target)
+					subject.get_target( 'gamma' ).should be_instance_of(Tunnel::Target)
+					subject.get_target( 'delta' ).should be_instance_of(Tunnel::Target)
+					subject.get_target( 'omega' ).should be_instance_of(Tunnel::Target)
+				end
+			end
+
 		end
 	end
 end

@@ -114,7 +114,7 @@ module Tunnel
 			when String
 				target.alias( config )
 			else
-				@errors << "Cannot handle alias of type: #{config.class}"
+				@errors << "Cannot parse alias of type: #{config.class}"
 			end
 		end
 
