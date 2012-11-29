@@ -10,7 +10,7 @@ module Tunnel
 			@aliases = []
 		end
 
-		def forward_port( port, server='localhost' ) 
+		def forward_port( port, server ) 
 			@forwards << [ server, port ]
 		end
 

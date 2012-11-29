@@ -73,23 +73,35 @@ module Tunnel
 			when nil
 				@errors << "Target #{target.name} has no forwards defined."
 			when Fixnum
-				target.forward_port( config )
+				forward_port( target, config )
 			when Array
-				config.each { |port| target.forward_port(port) }
+				config.each { |port| forward_port target, port }
 			when Hash
-				config.each_key do |server|
-					server_config = config[ server ]
-					case server_config
-					when Fixnum
-						target.forward_port( server_config, server )
-					when Array
-						server_config.each { |port| target.forward_port( port, server ) }
-					else
- 						@errors << "Not sure how to handle forward from #{target.host} to #{server}: #{server_config.class}"
- 					end
-				end
+				parse_server_forward( target, config )
 			else
 				@errors << "Not sure how to handle forward for '#{target.host}': #{config.class}"
+			end
+		end
+
+		def parse_server_forward( target, config )
+			config.each_key do |server|
+				server_config = config[ server ]
+				case server_config
+				when Fixnum
+					forward_port target, server_config, server
+				when Array
+					server_config.each { |port| forward_port target, port, server }
+				else
+					@errors << "Not sure how to handle forward from #{target.host} to #{server}: #{server_config.class}"
+				end
+			end
+		end
+
+		def forward_port( target, port, server = 'localhost' )
+			if Fixnum === port && port.between?( 1, 65535 )
+				target.forward_port port, server
+			else
+				@errors << "Invalid port: #{port}"
 			end
 		end
 

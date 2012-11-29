@@ -81,12 +81,13 @@ describe Tunnel::Config do
 
 						before do
 							Tunnel::Target.stub(:new) { targetmock }
+							targetmock.stub( :host ) { 'host' }
 						end
 
 						context "of 8080" do
 							let(:forward) { 8080 }
-							it "should forward port 8080 (no server specified)" do
-								targetmock.should_receive( :forward_port ).with( 8080 )
+							it "should forward port 8080 on localhost" do
+								targetmock.should_receive( :forward_port ).with( 8080, 'localhost' )
 								subject.should be_valid
 							end
 						end
@@ -94,8 +95,8 @@ describe Tunnel::Config do
 						context "of [ 8000, 8443 ]" do
 							let(:forward) { [8000,8443] }
 							it "should forward ports 8080 and 8443" do
-								targetmock.should_receive( :forward_port ).with( 8000 )
-								targetmock.should_receive( :forward_port ).with( 8443 )
+								targetmock.should_receive( :forward_port ).with( 8000, 'localhost' )
+								targetmock.should_receive( :forward_port ).with( 8443, 'localhost' )
 								subject.should be_valid
 							end
 						end
@@ -115,10 +116,30 @@ describe Tunnel::Config do
 							end
 						end
 
-						it "should warn if forward is not whole number"
-						it "should warn if port is negative"
-						it "should warn if port contains characters"
-						it "should warn if array contains invalid ports"
+						context "of 8000.5" do
+							let(:forward) { 8000.5 }
+							it { should_not be_valid }
+							specify { subject.errors.should include_match(/Not sure how to handle forward .*: Float/) }
+						end
+
+						context "of -8080" do
+							let(:forward) { -8080 }
+							it { should_not be_valid }
+							specify { subject.errors.should include_match(/Invalid port/) }
+						end
+
+						context "of 'blueberry'" do
+							let(:forward) { 'blueberry' }
+							it { should_not be_valid }
+							specify { subject.errors.should include_match(/Not sure how to handle forward .*: String/) }
+						end
+
+						context "of 'blueberry'" do
+							let(:forward) { [ 80.80, -443, 'blueberry' ] }
+							it { should_not be_valid }
+							specify { subject.errors.should include_match(/Invalid port/) }
+						end
+
 					end
 
 					context "when target config has a an alias" do
