@@ -38,6 +38,10 @@ module Tunnel
 			end
 
 			puts "Shutting down the machine."
+		rescue Errno::ECONNRESET
+			puts "\nConnection lost (reset). Shutting down the machine."
+		rescue Errno::ETIMEDOUT
+			puts "\nConnection lost (timed out). Shutting down the machine."
 		end
 
 		def forward_ports( session )
