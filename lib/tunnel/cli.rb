@@ -42,6 +42,8 @@ module Tunnel
 			puts "\nConnection lost (reset). Shutting down the machine."
 		rescue Errno::ETIMEDOUT
 			puts "\nConnection lost (timed out). Shutting down the machine."
+		rescue Errno::EADDRINUSE
+			puts "\nPorts already in use, cannot forward. Shutting down the machine."
 		end
 
 		def forward_ports( session )
