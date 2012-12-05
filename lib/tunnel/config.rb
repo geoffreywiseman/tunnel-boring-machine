@@ -20,6 +20,8 @@ module Tunnel
 			else
 				@errors << "No configuration file found. Specify your tunnels in YAML form in: ~/.tunnels"
 			end
+		rescue Psych::SyntaxError => pse
+			@errors << "Tunnel config is invalid YAML: #{pse}"
 		end
 
 		def valid?
