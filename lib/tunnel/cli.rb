@@ -62,11 +62,9 @@ module Tunnel
 			if config.valid? 
 				cli = CommandLineInterface.new( config )
 				cli.parse
-				if cli.valid? then
-					cli.bore
-				else
-					puts "Cannot parse configuration:\n\t#{cli.errors.join('\n\t')}"
-				end
+				cli.bore if cli.valid?
+			else
+				puts "Cannot parse configuration:\n\t#{config.errors.join('\n\t')}"
 			end
 		end
 	end
