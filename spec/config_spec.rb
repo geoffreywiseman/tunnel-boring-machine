@@ -87,7 +87,7 @@ describe Tunnel::Config do
 						context "of 8080" do
 							let(:forward) { 8080 }
 							it "should forward port 8080 on localhost" do
-								targetmock.should_receive( :forward_port ).with( 8080, 'localhost' )
+								targetmock.should_receive( :forward_port ).with( 8080, nil )
 								subject.should be_valid
 							end
 						end
@@ -95,8 +95,8 @@ describe Tunnel::Config do
 						context "of [ 8000, 8443 ]" do
 							let(:forward) { [8000,8443] }
 							it "should forward ports 8080 and 8443" do
-								targetmock.should_receive( :forward_port ).with( 8000, 'localhost' )
-								targetmock.should_receive( :forward_port ).with( 8443, 'localhost' )
+								targetmock.should_receive( :forward_port ).with( 8000, nil )
+								targetmock.should_receive( :forward_port ).with( 8443, nil )
 								subject.should be_valid
 							end
 						end

@@ -50,9 +50,11 @@ module Tunnel
 			begin
 				puts "Opened connection to #{@target.username}@#{@target.host}:"
 				@target.each_forward do |fwd|
-					remote_server, port = fwd
-					session.forward.local( port, remote_server, port )
-					puts "\tforwarded port #{port} to #{remote_server}:#{port}"
+					port = fwd.last
+					remote_host = fwd.first || 'localhost'
+					remote_host_name = fwd.first || @target.host
+					session.forward.local( port, remote_host, port )
+					puts "\tforwarded port #{port} to #{remote_host_name}:#{port}"
 				end
 				puts "\twaiting for Ctrl-C..."
 				session.loop(0.1) { not @cancelled }

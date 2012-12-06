@@ -99,7 +99,7 @@ module Tunnel
 			end
 		end
 
-		def forward_port( target, port, server = 'localhost' )
+		def forward_port( target, port, server = nil )
 			if Fixnum === port && port.between?( 1, 65535 )
 				target.forward_port port, server
 			else
