@@ -4,18 +4,39 @@ module Tunnel
 	class CommandLineInterface
 		def initialize( config )
 			@config = config
-			@target = nil
+			@targets = nil
 			@cancelled = false
 		end
 
 		def parse
-			if ARGV.size != 1 
-				print_targets "SYNTAX: tbm <target>\n\nWhere target is one of:" 
+			if ARGV.empty? then 
+				print_targets "SYNTAX: tbm <targets>\n\nWhere <targets> is a comma-separated list of:" 
 			else
-				target_name = ARGV[0]
-				@target = @config.get_target( target_name )
-				print_targets( "Cannot find target: #{target_name}\n\nThese are the targets currently defined:" ) if @target.nil?
+				targets = []
+				missing_targets = []
+				ARGV.each do |target_name|
+					target =  @config.get_target( target_name )
+					if target.nil? 
+						missing_targets << target_name
+					else
+						targets << target
+					end
+				end
+
+				if missing_targets.any?
+					print_targets( "Cannot find target(s): #{missing_targets.join(', ')}\n\nThese are the targets currently defined:")
+				elsif invalid_combination?(targets)
+					puts "Can't combine targets: #{ARGV.join(', ')}."
+				else
+					@targets = targets
+				end
 			end
+		end
+
+		def invalid_combination?( targets )
+			num_hosts = targets.map { |t| t.host }.uniq.size
+			num_usernames = targets.map { |t| t.username }.uniq.size
+			num_hosts != 1 || num_usernames != 1
 		end
 
 		def print_targets( message )
@@ -25,7 +46,7 @@ module Tunnel
 
 
 		def valid?
-			!@target.nil?
+			!@targets.nil?
 		end
 
 		def bore
@@ -33,7 +54,10 @@ module Tunnel
 			puts
 
 			trap("INT") { @cancelled = true }
-			Net::SSH.start( @target.host, @target.username ) do |session|
+			host = @targets.first.host
+			username = @targets.first.username
+			Net::SSH.start( host, username ) do |session|
+				puts "Opened connection to #{username}@#{host}:"
 				forward_ports( session )
 			end
 
@@ -43,18 +67,19 @@ module Tunnel
 		rescue Errno::ETIMEDOUT
 			puts "\nConnection lost (timed out). Shutting down the machine."
 		rescue Errno::EADDRINUSE
-			puts "\nPorts already in use, cannot forward. Shutting down the machine."
+			puts "\tPorts already in use, cannot forward.\n\nShutting down the machine."
 		end
 
 		def forward_ports( session )
 			begin
-				puts "Opened connection to #{@target.username}@#{@target.host}:"
-				@target.each_forward do |fwd|
-					port = fwd.last
-					remote_host = fwd.first || 'localhost'
-					remote_host_name = fwd.first || @target.host
-					session.forward.local( port, remote_host, port )
-					puts "\tforwarded port #{port} to #{remote_host_name}:#{port}"
+				@targets.each do |target|
+					target.each_forward do |fwd|
+						port = fwd.last
+						remote_host = fwd.first || 'localhost'
+						remote_host_name = fwd.first || target.host
+						session.forward.local( port, remote_host, port )
+						puts "\tforwarded port #{port} to #{remote_host_name}:#{port}"
+					end
 				end
 				puts "\twaiting for Ctrl-C..."
 				session.loop(0.1) { not @cancelled }

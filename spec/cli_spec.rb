@@ -3,10 +3,12 @@ require 'tunnel/config'
 require 'tunnel/target'
 require 'tunnel/meta'
 
-describe Tunnel::CommandLineInterface do
+include Tunnel
+
+describe CommandLineInterface do
 
 	let( :config ) { double( Tunnel::Config ) }
-	subject { Tunnel::CommandLineInterface.new config }
+	subject { CommandLineInterface.new config }
 
 	before do
 		Tunnel::Config.stub( :new ) { config }
@@ -19,7 +21,7 @@ describe Tunnel::CommandLineInterface do
 		let(:config_valid) { false }
 		let(:config_errors) { ["Invalid Config"] }
 		it "should print config errors" do
-			Tunnel::CommandLineInterface.parse_and_run
+			CommandLineInterface.parse_and_run
 			@messages.should include_match(/Cannot parse config/)
 			@messages.should include_match(/Invalid Config/)
 		end
@@ -34,23 +36,7 @@ describe Tunnel::CommandLineInterface do
 		end
 
 		it "should print syntax and targets" do
-			Tunnel::CommandLineInterface.parse_and_run
-			@messages.should include_match( /SYNTAX/ )
-			@messages.should include_match( /alpha/ )
-			@messages.should include_match( /beta/ )
-		end
-	end
-
-	context "with multiple parameters" do
-		let(:config_valid) { true }
-
-		before do
-			ARGV.clear.push( 'alpha', 'beta' )
-			config.stub(:each_target).and_yield( 'alpha' ).and_yield( 'beta' )
-		end
-
-		it "should print syntax and targets" do
-			Tunnel::CommandLineInterface.parse_and_run
+			CommandLineInterface.parse_and_run
 			@messages.should include_match( /SYNTAX/ )
 			@messages.should include_match( /alpha/ )
 			@messages.should include_match( /beta/ )
@@ -66,7 +52,7 @@ describe Tunnel::CommandLineInterface do
 		end
 
 		context "matching a config target" do
-			let(:target) { double Tunnel::Target }
+			let(:target) { double Target }
 			let(:thost) { 'target-host.example.com' }
 			let(:tuser) { 'username' }
 
@@ -77,7 +63,7 @@ describe Tunnel::CommandLineInterface do
 
 			it "should start an SSH connection" do
 				Net::SSH.stub(:start).with(thost,tuser)
-				Tunnel::CommandLineInterface.parse_and_run
+				CommandLineInterface.parse_and_run
 			end
 		end
 
@@ -89,15 +75,90 @@ describe Tunnel::CommandLineInterface do
 			end
 
 			it "should say 'Cannot find target'" do
-				Tunnel::CommandLineInterface.parse_and_run
+				CommandLineInterface.parse_and_run
 				@messages.should include_match( /Cannot find target/ )
 			end
 
 			it "should print target list" do
-				Tunnel::CommandLineInterface.parse_and_run
+				CommandLineInterface.parse_and_run
 				@messages.should include_match( /another-target/ )
 			end
 		end
 	end
+
+	context "with multiple parameters" do
+		let(:config_valid) { true }
+
+		before do
+			ARGV.clear.push( 'alpha', 'beta' )
+			config.stub(:get_target).with('alpha') { alpha }
+			config.stub(:get_target).with('beta') { beta }
+		end
+
+		context "matching configured targets with same host and user" do
+			let(:alpha) { Target.new( 'alpha', 'host', 'username' ) }
+			let(:beta) { Target.new( 'beta', 'host', 'username' ) }
+
+			it "should start an SSH connection" do
+				Net::SSH.should_receive(:start).with( 'host', 'username' )
+				CommandLineInterface.parse_and_run
+			end
+		end
+
+		context "matching configured targets with different hosts" do
+			let(:alpha) { double Target }
+			let(:beta) { double Target }
+
+			before do
+				alpha.stub(:host) { 'host1' }
+				alpha.stub(:username) { 'username' }
+				beta.stub(:host) { 'host2' }
+				beta.stub(:username) { 'username' }
+			end
+
+			it "should say 'Can't combine targets'" do
+				CommandLineInterface.parse_and_run
+				@messages.should include_match(/Can't combine targets/)
+			end
+		end
+
+		context "matching configured targets with different usernames" do
+			let(:alpha) { double Target }
+			let(:beta) { double Target }
+
+			before do
+				alpha.stub(:host) { 'host' }
+				alpha.stub(:username) { 'username1' }
+				beta.stub(:host) { 'host' }
+				beta.stub(:username) { 'username2' }
+			end
+
+			it "should say 'Can't combine targets'" do
+				CommandLineInterface.parse_and_run
+				@messages.should include_match(/Can't combine targets/)
+			end
+		end
+
+		context "not all matching configured targets" do
+			let(:alpha) { nil }
+			let(:beta) { nil }
+
+			before do
+				config.stub(:each_target).and_yield( 'gamma' ).and_yield( 'delta' )
+			end
+
+			it "should say 'Cannot find target'" do
+				CommandLineInterface.parse_and_run
+				@messages.should include_match(/Cannot find target/)
+			end
+
+			it "should print target list" do
+				CommandLineInterface.parse_and_run
+				@messages.should include_match( /gamma/ )
+				@messages.should include_match( /delta/ )
+			end
+		end
+	end
+
 
 end
