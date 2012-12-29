@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Tunnel Boring Machine : A ruby application for managing SSH tunnels." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Tunnel Boring Machine</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/geoffreywiseman/tunnel-boring-machine">View on GitHub</a>
+
+          <h1 id="project_title">Tunnel Boring Machine</h1>
+          <h2 id="project_tagline">A ruby application for managing SSH tunnels.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/geoffreywiseman/tunnel-boring-machine/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/geoffreywiseman/tunnel-boring-machine/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Tunnel Boring Machine</h1>
+
+<p>Tunnel Boring Machine is a ruby application to manage SSH tunnels, which you can use to achieve something a little like a VPN, wherein SSH access to a server can give you access to the network beyond that server.</p>
+
+<p>I use SSH tunnels on a regular basis to access resources at client sites that are not exposed directly to the internet as a whole. Managing those tunnels as a series of bash scripts or aliases became cumbersome. I wanted / needed something better, and the tunnel boring machine has evolved from that need.</p>
+
+<h2>Current Status</h2>
+
+<p>It's pretty early days. I'm using this myself, but I haven't gone out of my way to share it with anyone because so much is still in flux. I imagine it will be starting to stabilize soon into something I might call a 'beta' product. At the moment, it's probably more of an 'alpha'.</p>
+
+<h2>Installing</h2>
+
+<p>It is bundled as a ruby gem, so if you have Ruby and RubyGems installed, simply run:</p>
+
+<pre><code>gem install tbm
+</code></pre>
+
+<p>If you prefer, you can certainly download it and build it yourself, or simply invoke the ruby code from the command-line.</p>
+
+<h2>Invocation</h2>
+
+<p>For the time being, TBM is a simple command you invoke to open the tunnels you need, then you cancel with <code>^C</code> to close the tunnels that you had opened. Something like this:</p>
+
+<pre><code>$ tbm dev-ngnix
+</code></pre>
+
+<p>Eventually, I expect that TBM will become a little more interactive, allowing you to open additional tunnels without closing the ones you already opened, close a tunnel without closing all of them, and so forth. Whether it does this as an interactive program, a shell command that interacts with a running process is all TBD.</p>
+
+<h2>Configuration</h2>
+
+<p>You configure the tunnel boring machine by creating a configuration file in YAML form at <code>~/.tunnels</code>. At the moment, you can't have multiple configuration files, change the location of the configuration file or anything of that nature.</p>
+
+<p>An example configuration file follows:</p>
+
+<pre><code>jira:
+    host: ssh.example.com
+    forward: 8080
+teamcity:
+    host: ssh.example.com
+    forward: 8111
+    alias: tc
+jdbc-as400:
+    host: ssh.example.com
+    forward:
+      greenmachine: [ 449, 8470, 8471, 8476 ]
+    alias: [ ja, j400 ] 
+</code></pre>
+
+<p>This configuration file is still evolving -- I expect the format to continue to change, the above simply represents the current state.</p>
+
+<h2>License</h2>
+
+<p>I've put it under the UNLICENSE. Basically, I don't care if you use it, bundle it inside commercial software, or otherwise make use of it, and I don't offer any kind of warranty or support guarantees, nor do I guarantee that any of the projects dependencies are suited for whatever purpose you have in mind. That's all up to you. That said, if you want to talk about it, see the next section.</p>
+
+<h2>Contact</h2>
+
+<p>If you're using TBM and you want to talk about it or make suggestions, get in touch with me on <a href="http://twitter.com/geoffreywiseman">Twitter</a> or send me an <a href="mailto:geoffrey.wiseman@codiform.com">email</a>. If there's enough interest, I'd be happy to set up a group, but for the time being that seems like overkill.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Tunnel Boring Machine maintained by <a href="https://github.com/geoffreywiseman">geoffreywiseman</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-977058-7");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+
+  </body>
+</html>
