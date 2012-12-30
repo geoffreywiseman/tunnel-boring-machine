@@ -22,17 +22,17 @@ end
 
 spec = Gem::Specification.new do |spec|
   spec.name = 'tbm'
-  spec.version = Tunnel::VERSION
-  spec.date = Tunnel::DATE
-  spec.summary = 'Named SSH tunnels, like bookmarks.'
+  spec.version = TBM::VERSION
+  spec.date = TBM::RELEASE_DATE
+  spec.summary = 'Manages SSH Tunnels by creating an SSH connection and forwarding ports based on named targets defined in configuration.'
   spec.description = 'The "Tunnel Boring Machine" is meant to bore ssh tunnels through the internet to your desired destination simply and repeatedly, as often as you need them. This is a tool for someone who needs SSH tunnels frequently.'
   spec.author = 'Geoffrey Wiseman'
   spec.email = 'geoffrey.wiseman@codiform.com'
   spec.homepage = 'http://github.com/geoffreywiseman/tunnel-boring-machine'
   spec.executables << 'tbm'
-  
+
   spec.files = Dir['{lib,spec}/**/*.rb', 'bin/*', 'Rakefile', 'README.md', 'UNLICENSE']
-  
+
   spec.add_dependency( 'net-ssh', '>= 2.6.2' )
 end
 

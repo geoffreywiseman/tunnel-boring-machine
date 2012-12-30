@@ -2,4 +2,4 @@
 
 require 'tbm'
 
-Tunnel::CommandLineInterface.parse_and_run
+TBM::CommandLineInterface.parse_and_run

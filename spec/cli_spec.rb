@@ -1,17 +1,14 @@
-require 'tunnel/cli'
-require 'tunnel/config'
-require 'tunnel/target'
-require 'tunnel/meta'
+require 'tbm'
 
-include Tunnel
+include TBM
 
 describe CommandLineInterface do
 
-	let( :config ) { double( Tunnel::Config ) }
+	let( :config ) { double( TBM::Config ) }
 	subject { CommandLineInterface.new config }
 
 	before do
-		Tunnel::Config.stub( :new ) { config }
+		TBM::ConfigParser.stub( :parse ) { config }
 		config.stub( :valid? ) { config_valid }
 		config.stub( :errors ) { config_errors }
 		stub_messages
@@ -55,14 +52,16 @@ describe CommandLineInterface do
 			let(:target) { double Target }
 			let(:thost) { 'target-host.example.com' }
 			let(:tuser) { 'username' }
+			let(:machine) { double( Machine ) }
 
 			before do
 				target.stub(:host) { thost }
 				target.stub(:username) { tuser }
 			end
 
-			it "should start an SSH connection" do
-				Net::SSH.stub(:start).with(thost,tuser)
+			it "should start Tunnel Boring Machine" do
+				Machine.stub(:new) { machine }
+				machine.should_receive(:bore)
 				CommandLineInterface.parse_and_run
 			end
 		end
@@ -98,9 +97,11 @@ describe CommandLineInterface do
 		context "matching configured targets with same host and user" do
 			let(:alpha) { Target.new( 'alpha', 'host', 'username' ) }
 			let(:beta) { Target.new( 'beta', 'host', 'username' ) }
+			let(:machine) { double( Machine ) }
 
-			it "should start an SSH connection" do
-				Net::SSH.should_receive(:start).with( 'host', 'username' )
+			it "should start boring machine" do
+				Machine.stub(:new) { machine }
+				machine.should_receive(:bore)
 				CommandLineInterface.parse_and_run
 			end
 		end

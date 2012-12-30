@@ -1,9 +1,9 @@
-require 'tunnel/target'
+require 'TBM/target'
 require 'rspec'
 
-describe Tunnel::Target do
+describe TBM::Target do
 	context "with name 'Foo'" do
-		subject { Tunnel::Target.new( 'Foo','host','user' ) }
+		subject { TBM::Target.new( 'Foo','host','user' ) }
 
 		it "should have name 'Foo'" do
 			subject.should have_name( 'Foo' )
@@ -15,8 +15,8 @@ describe Tunnel::Target do
 
 		context "and aliases 'Bar', 'Baz'" do
 			before do
-				subject.alias('Bar')
-				subject.alias('Baz')
+				subject.add_alias('Bar')
+				subject.add_alias('Baz')
 			end
 
 			it "should have name 'Foo'" do
