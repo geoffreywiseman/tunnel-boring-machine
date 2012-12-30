@@ -73,7 +73,7 @@ describe ConfigParser do
 			context "keyed by a non-String" do
 				let(:gateway) { Array.new }
 				let(:targets) { Hash.new }
-				specify { subject.errors.should include( "Cannot parse gateway name: [] (Array)" ) }
+				specify { subject.errors.should include_match( /Cannot parse gateway name/ ) }
 			end
 
 			context "with target hash of tunnels" do
