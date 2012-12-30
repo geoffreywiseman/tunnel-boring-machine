@@ -26,20 +26,23 @@ You configure the tunnel boring machine by creating a configuration file in YAML
 
 An example configuration file follows:
 
-    jira:
-        host: ssh.example.com
-        forward: 8080
-    teamcity:
-        host: ssh.example.com
-        forward: 8111
+    dev.example.com:
+      jira: 2222
+      teamcity:
+        tunnel: 8888
         alias: tc
-    jdbc-as400:
-        host: ssh.example.com
-        forward:
-          greenmachine: [ 449, 8470, 8471, 8476 ]
-        alias: [ ja, j400 ] 
+      jdbc-as400:
+        as400: [ 449, 8470, 8471, 8476 ]
+        alias: [ ju, ussi ]
+      qa:
+        forward: 8080
+      staging:
+        alias: [ stage, st ]
+        tunnel: 8080:80
+      5250: 8023:as400:23
+      webfacing: as400:10905
 
-This configuration file is still evolving -- I expect the format to continue to change, the above simply represents the current state.
+Although the above configuration format is still subject to flux, I feel like it's starting to stabilize, so I'm going to need to document it more thoroughly. For the time being, you might want to look at the [closed issue](https://github.com/geoffreywiseman/tunnel-boring-machine/issues/38) regarding the format change.
 
 ## License ##
 I've put it under the UNLICENSE. Basically, I don't care if you use it, bundle it inside commercial software, or otherwise make use of it, and I don't offer any kind of warranty or support guarantees, nor do I guarantee that any of the projects dependencies are suited for whatever purpose you have in mind. That's all up to you. That said, if you want to talk about it, see the next section.
