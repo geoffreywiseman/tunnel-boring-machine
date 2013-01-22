@@ -17,7 +17,7 @@ If you prefer, you can certainly download it and build it yourself, or simply in
 ## Invocation ##
 For the time being, TBM is a simple command you invoke to open the tunnels you need, then you cancel with `^C` to close the tunnels that you had opened. Something like this:
 
-    $ tbm dev-ngnix
+    $ tbm dev-nginx
 
 Eventually, I expect that TBM will become a little more interactive, allowing you to open additional tunnels without closing the ones you already opened, close a tunnel without closing all of them, and so forth. Whether it does this as an interactive program, a shell command that interacts with a running process is all TBD.
 
