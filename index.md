@@ -26,7 +26,7 @@ For the time being, TBM is a simple command you invoke to open the tunnels you n
 Eventually, I expect that TBM will become a little more interactive, allowing you to open additional tunnels without closing the ones you already opened, close a tunnel without closing all of them, and so forth. Whether it does this as an interactive program, a shell command that interacts with a running process is all TBD.
 
 ## Configuration ##
-You configure the tunnel boring machine by creating a configuration file in YAML form at `~/.tunnels`. At the moment, you can't have multiple configuration files, change the location of the configuration file or anything of that nature.
+You configure the tunnel boring machine by creating a configuration file in YAML form at `~/.tbm`. At the moment, you can't have multiple configuration files, change the location of the configuration file or anything of that nature.
 
 An example configuration file follows:
 
