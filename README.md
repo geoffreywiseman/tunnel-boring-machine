@@ -35,7 +35,7 @@ An example configuration file follows:
         as400: [ 449, 8470, 8471, 8476 ]
         alias: [ ju, ussi ]
       qa:
-        forward: 8080
+        tunnel: 8080
       staging:
         alias: [ stage, st ]
         tunnel: 8080:80
