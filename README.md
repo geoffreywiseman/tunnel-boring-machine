@@ -1,5 +1,5 @@
 # Tunnel Boring Machine
-[![Build Status](https://travis-ci.org/geoffreywiseman/tunnel-boring-machine.png?branch=master)](https://travis-ci.org/geoffreywiseman/tunnel-boring-machine) [![Dependency Status](https://gemnasium.com/geoffreywiseman/tunnel-boring-machine.png)](https://gemnasium.com/geoffreywiseman/tunnel-boring-machine)
+[![Build Status](https://travis-ci.org/geoffreywiseman/tunnel-boring-machine.png?branch=master)](https://travis-ci.org/geoffreywiseman/tunnel-boring-machine) [![Dependency Status](https://gemnasium.com/geoffreywiseman/tunnel-boring-machine.png)](https://gemnasium.com/geoffreywiseman/tunnel-boring-machine) [![Code Climate](https://codeclimate.com/github/geoffreywiseman/tunnel-boring-machine.png)](https://codeclimate.com/github/geoffreywiseman/tunnel-boring-machine)
 
 Tunnel Boring Machine is a ruby application to manage SSH tunnels, which you can use to achieve something a little like a VPN, wherein SSH access to a server can give you access to the network beyond that server.
 
