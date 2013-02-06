@@ -43,7 +43,7 @@ An example configuration file follows:
       5250: 8023:as400:23
       webfacing: as400:10905
 
-Although the above configuration format is still subject to flux, I feel like it's starting to stabilize, so I'm going to need to document it more thoroughly. For the time being, you might want to look at the [closed issue](https://github.com/geoffreywiseman/tunnel-boring-machine/issues/38) regarding the format change.
+I have [documented the configuration file format](http://geoffreywiseman.github.com/tunnel-boring-machine/config.html) on the website.
 
 ## License ##
 I've put it under the UNLICENSE. Basically, I don't care if you use it, bundle it inside commercial software, or otherwise make use of it, and I don't offer any kind of warranty or support guarantees, nor do I guarantee that any of the projects dependencies are suited for whatever purpose you have in mind. That's all up to you. That said, if you want to talk about it, see the next section.
