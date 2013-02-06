@@ -1,4 +1,5 @@
 # Tunnel Boring Machine
+[![Dependency Status](https://gemnasium.com/geoffreywiseman/tunnel-boring-machine.png)](https://gemnasium.com/geoffreywiseman/tunnel-boring-machine)
 
 Tunnel Boring Machine is a ruby application to manage SSH tunnels, which you can use to achieve something a little like a VPN, wherein SSH access to a server can give you access to the network beyond that server.
 
