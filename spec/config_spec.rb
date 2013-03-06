@@ -95,7 +95,7 @@ describe ConfigParser do
 
 				context "with target config of 0" do
 					let(:target) { 0 }
-					specify { subject.errors.should include( "Invalid port number: 0" ) }
+					specify { subject.errors.should include( "Invalid port number 0" ) }
 				end
 
 				context "with target config of '8443'" do
@@ -108,7 +108,7 @@ describe ConfigParser do
 
 				context "with target config of '77777'" do
 					let(:target) { "77777" }
-					specify { subject.errors.should include( "Invalid port number: 77777" ) }
+					specify { subject.errors.should include( "Invalid port number 77777" ) }
 				end
 
 				context "with target config of '8080:80'" do

@@ -7,7 +7,22 @@ module TBM
 
 		# The configuration file used for parsing config.
 		CONFIG_FILE = File.expand_path( '~/.tbm' )
+
+		# Pattern for Gateway Server with Optional Username
 		GATEWAY_PATTERN = /^([^@]+)(@([^@]+))?$/
+
+		# Pattern for a tunnel with a remote host followed by a port (example.com:3333)
+		HOSTPORT_PATTERN = /^([a-zA-Z0-9\.\-]+):(\d{1,5})$/
+
+		# Pattern for a tunnel with a remote host and local and remote ports (1234:example.com:4321)
+		PORTHOSTPORT_PATTERN = /^(\d{1,5}):([a-zA-Z0-9\.\-]+):(\d{1,5})$/
+
+		# Pattern for a tunnel with a local port and a gateway port (1234:4321)
+		PORTPORT_PATTERN = /^(\d{1,5}):(\d{1,5})$/
+
+		# Pattern for a tunnel with a single port to be used client/server to forward to the gateway (1234)
+		PORT_PATTERN = /^\d{1,5}$/
+
 
 		# Parses the tunnel boring machine configuration to get a list of targets which can 
 		# be invoked to bore tunnels.
@@ -99,54 +114,45 @@ module TBM
 		def self.tunnel( target, tunnel_config, config )
 			case tunnel_config
 			when Fixnum
-				if valid_port?( tunnel_config )
-					target.add_tunnel( Tunnel.new( tunnel_config ) )
-				else
-					config.errors << "Invalid port number: #{tunnel_config}"
-				end
+					config.errors.concat validate_and_add( tunnel_config, tunnel_config, target )
 			when String
 				case tunnel_config 
-				when /^\d{1,5}$/
-					port = tunnel_config.to_i
-					if valid_port?( port )
-						target.add_tunnel( Tunnel.new( port ) )
-					else
-						config.errors << "Invalid port number: #{tunnel_config}"
-					end
-				when /^(\d{1,5}):(\d{1,5})$/
-					port = $1.to_i
-					remote_port = $2.to_i
-					if !valid_port?( port )
-						config.errors << "Invalid local port number #{port} from #{tunnel_config}"
-					elsif !valid_port?( remote_port )
-						config.errors << "Invalid remote port number #{remote_port} from #{tunnel_config}"
-					else
-						target.add_tunnel( Tunnel.new( port, :remote_port => remote_port ) )
-					end
-				when /^(\d{1,5}):([a-zA-Z0-9\.\-]+):(\d{1,5})$/
-					port = $1.to_i
-					remote_host = $2
-					remote_port = $3.to_i
-					if !valid_port?( port )
-						config.errors << "Invalid local port number #{port} from #{tunnel_config}"
-					elsif !valid_port?( remote_port )
-						config.errors << "Invalid remote port number #{remote_port} from #{tunnel_config}"
-					else
-						target.add_tunnel( Tunnel.new( port, :remote_host => remote_host, :remote_port => remote_port ) )
-					end
-				when /^([a-zA-Z0-9\.\-]+):(\d{1,5})$/
-					port = $2.to_i
-					remote_host = $1
-					if !valid_port?( port )
-						config.errors << "Invalid port number #{port} from #{tunnel_config}"
-					else
-						target.add_tunnel( Tunnel.new( port, :remote_host => remote_host ) )
-					end
+				when PORT_PATTERN
+					config.errors.concat validate_and_add( tunnel_config.to_i, tunnel_config, target )
+				when PORTPORT_PATTERN
+					config.errors.concat validate_and_add( $1.to_i, tunnel_config, target, :remote_port => $2.to_i )
+				when PORTHOSTPORT_PATTERN
+					config.errors.concat validate_and_add( $1.to_i, tunnel_config, target, :remote_host => $2, :remote_port => $3.to_i )
+				when HOSTPORT_PATTERN
+					config.errors.concat validate_and_add( $2.to_i, tunnel_config, target, :remote_host => $1 )
 				else
-					config.errors << "Cannot parse tunnel: #{tunnel_config} (#{tunnel_config.class})"
+					config.errors.concat "Cannot parse tunnel: #{tunnel_config} (#{tunnel_config.class})"
 				end
 			else
-				config.errors << "Cannot parse tunnel: #{tunnel_config} (#{tunnel_config.class})"
+				config.errors.concat "Cannot parse tunnel: #{tunnel_config} (#{tunnel_config.class})"
+			end
+		end
+
+		def self.validate_and_add( port, tunnel_config, target, options={} )
+			errors = []
+			if options.has_key?( :remote_port ) then
+				validate_port( port, 'local', tunnel_config, errors )
+				validate_port( options[:remote_port], 'remote', tunnel_config, errors )
+			else
+				validate_port( port, nil, tunnel_config, errors )
+			end
+			target.add_tunnel( Tunnel.new( port, options ) ) if errors.empty?
+			return errors
+		end
+
+		def self.validate_port( port, port_qualifier, tunnel_config, errors )
+			if valid_port?( port )
+				return true
+			else
+				qualified_port = ( port_qualifier.nil? ? "port" : "#{port_qualifier} port" )
+				port_source = tunnel_config.to_s.match PORT_PATTERN ? '' : " from ${tunnel_config}"
+				errors << "Invalid #{qualified_port} number #{port}#{port_source}"
+				return false
 			end
 		end
 
@@ -184,35 +190,18 @@ module TBM
 		def self.remote_tunnel( target, remote_host, tunnel_config, config )
 			case tunnel_config
 			when Fixnum
-				if valid_port?( tunnel_config )
-					target.add_tunnel( Tunnel.new( tunnel_config, :remote_host => remote_host ) )
-				else
-					config.errors << "Invalid port number: #{tunnel_config}"
-				end
+				config.errors << validate_and_add( tunnel_config, tunnel_config, target, :remote_host => remote_host )
 			when String
 				case tunnel_config 
-				when /^\d{1,5}$/
-					port = tunnel_config.to_i
-					if valid_port?( port )
-						target.add_tunnel( Tunnel.new( port, :remote_host => remote_host ) )
-					else
-						config.errors << "Invalid port number: #{tunnel_config}"
-					end
-				when /^(\d{1,5}):(\d{1,5})$/
-					port = $1.to_i
-					remote_port = $2.to_i
-					if !valid_port?( port )
-						config.errors << "Invalid local port number #{port} from #{tunnel_config}"
-					elsif !valid_port?( remote_port )
-						config.errors << "Invalid remote port number #{remote_port} from #{tunnel_config}"
-					else
-						target.add_tunnel( Tunnel.new( port, :remote_port => remote_port, :remote_host => remote_host ) )
-					end
+				when PORT_PATTERN
+					config.errors << validate_and_add( tunnel_config.to_i, tunnel_config, target, :remote_host => remote_host )
+				when PORTPORT_PATTERN
+					config.errors.concat validate_and_add( $1.to_i, tunnel_config, target, :remote_host => remote_host, :remote_port => $2.to_i )
 				else
-					config.errors << "Cannot parse tunnel: #{tunnel_config} (#{tunnel_config.class})"
+					config.errors.concat "Cannot parse tunnel: #{tunnel_config} (#{tunnel_config.class})"
 				end
 			else
-				config.errors << "Cannot parse tunnel: #{tunnel_config} (#{tunnel_config.class})"
+				config.errors.concat "Cannot parse tunnel: #{tunnel_config} (#{tunnel_config.class})"
 			end
 		end
 
