@@ -23,6 +23,14 @@ module TBM
 		# Pattern for a tunnel with a single port to be used client/server to forward to the gateway (1234)
 		PORT_PATTERN = /^\d{1,5}$/
 
+		# Pattern for a target with aliases defined in the target name
+		TARGET_NAME_PATTERN = /^
+			([A-Za-z0-9\.\-\[\]\#]+)									# name
+			(\s*\(\s* 																# optional parenthesized aliases
+			([A-Za-z0-9\.\-\[\]\#]+\s*								# first alias
+			(,\s*[A-Za-z0-9\.\-\[\]\#]+\s*)*)						# repeating alias pattern with commas
+		\))?\s*$/x 																	# end of parenthesized aliases
+
 
 		# Parses the tunnel boring machine configuration to get a list of targets which can 
 		# be invoked to bore tunnels.
@@ -84,14 +92,31 @@ module TBM
 
 		def self.parse_targets( gateway_host, gateway_username, targets, config )
 			if Hash === targets
-				targets.each_key do |target_name|
-					target = Target.new( target_name.to_s, gateway_host, gateway_username )
-					config.targets << target
-					configure_target( target, targets[target_name], config )
+				targets.each_key do |target_name_string|
+					names = parse_target_names( target_name_string.to_s )
+					if names.empty?
+						config.errors << "Cannot parse target name: #{target_name_string}"
+					else
+						target = Target.new( names.shift, gateway_host, gateway_username )
+						config.targets << target
+						names.each { |aka| target.add_alias aka }
+						configure_target( target, targets[target_name_string], config )
+					end
 				end
 			else
 				config.errors << "Cannot parse targets, expected Hash, received: #{targets.class}"
 			end
+		end
+
+		def self.parse_target_names( target_name_string )
+			names = []
+			if TARGET_NAME_PATTERN =~ target_name_string
+				names << $1
+				unless $3.nil?
+					names.concat $3.split(',').map { |x| x.strip }
+				end
+			end
+			return names
 		end
 
 		def self.configure_target( target, target_config, config )

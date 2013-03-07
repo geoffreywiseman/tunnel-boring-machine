@@ -85,6 +85,23 @@ describe ConfigParser do
 					specify { subject.errors.should include_match(/No target config/) }
 				end
 
+				context "with parenthesized alias" do
+					let(:targets) { { 'target-name (aka)' => 8080 } }
+					it "should accept alias as name" do
+						subject.should be_valid
+						subject.get_target( 'aka' ).should_not be_nil
+					end
+				end
+
+				context "with parenthesized aliases" do
+					let(:targets) { { 'target-name (pseudo,nym)' => 8080 } }
+					it "should accept alias as name" do
+						subject.should be_valid
+						subject.get_target( 'pseudo' ).should_not be_nil
+						subject.get_target( 'nym' ).should_not be_nil
+					end
+				end
+
 				context "with target config of 8080" do
 					let(:target) { 8080 }
 					it "should forward port 8080" do
