@@ -1,15 +1,20 @@
 ---
 layout: default
 ---
-
 # Tunnel Boring Machine
 
 Tunnel Boring Machine is a ruby application to manage SSH tunnels, which you can use to achieve something a little like a VPN, wherein SSH access to a server can give you access to the network beyond that server.
 
-I use SSH tunnels on a regular basis to access resources at client sites that are not exposed directly to the internet as a whole. Managing those tunnels as a series of bash scripts or aliases became cumbersome. I wanted / needed something better, and the tunnel boring machine has evolved from that need.
+I use SSH tunnels on a regular basis to access resources at client sites that are not exposed directly to the internet as a whole. Managing those tunnels as a series of bash scripts or aliases, and moving those scripts around from environment to environment became cumbersome. I wanted / needed something better, and the tunnel boring machine has evolved from that need.
 
 ## Current Status ##
-It's pretty early days, as evidenced by the 0.2 version number. I'm using this myself, but I haven't gone out of my way to publicize it because so much is still in flux. I imagine it will be starting to stabilize soon into something I might call a 'beta' product. At the moment, it's probably more of an 'alpha'.
+Version 0.3.0 was released 2013-Mar-07, and is available for use. I've written up the [release history and roadmap](releases.html), if you wany more detail.
+
+It's early days in the project lifecycle. The code is fairly stable, the configuration file is increasingly stable, but the value proposition for most people is still questionable.
+
+I'm using it, I know a couple of other people who use it sometimes, and it's entirely up to you if you want to use it.
+
+Given a few more releases, I might be able to make a stronger case for why this is something you want/need.
 
 ## Installing ##
 It is bundled as a ruby gem, so if you have Ruby and RubyGems installed, simply run:
@@ -32,17 +37,12 @@ An example configuration file follows:
 
     dev.example.com:
       jira: 2222
-      teamcity:
-        tunnel: 8888
-        alias: tc
+      teamcity (tc): 8888
       jdbc-as400:
         as400: [ 449, 8470, 8471, 8476 ]
         alias: [ ju, ussi ]
-      qa:
-        tunnel: 8080
-      staging:
-        alias: [ stage, st ]
-        tunnel: 8080:80
+      qa: 8080
+      staging (staging, st): 8080:80
       5250: 8023:as400:23
       webfacing: as400:10905
 

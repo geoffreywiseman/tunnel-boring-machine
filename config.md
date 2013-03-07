@@ -10,18 +10,22 @@ Configuring TBM is done by putting a ".tbm" file in your home directory (e.g. "~
 Within that configuration file, the structure is as follows:
 
     <gateway>:
-        <target name>:  <target config>
-        <target name>:  <target config>
+        <target name(s)>:  <target config>
+        <target name(s)>:  <target config>
     <gateway>:
-        <target name>:  <target config>
-        <target name>:  <target config>
+        <target name(s)>:  <target config>
+        <target name>(s):  <target config>
 
 The gateway takes one of two forms, either `username@address` or simply `address` where:
 
 -   *address* is the ip address (number or name) of the server to which the ssh connection is to be made
 -   *username* is the username to be used to connect to the gateway machine; if you don't specify this, then the username will be the current username on the local machine
 
-The target name is the name you would pass to TBM on the command-line to open the tunnel. It's just a name, you can make it whatever you want, TBM doesn't care.
+The target name is the name you would pass to TBM on the command-line to open the tunnel. TBM doesn't really care about the name, but to make parsing aliases a little easier, I've limited the names to characters, numbers, underscores, dashes, the period and the pound sign. If you feel strongly that I should add something to that charater set, let me know.
+
+If you want aliases to your target name, short-forms for instance, you can specify them here in a parenthesized comma-separated list:
+
+    name (alias, alias, alias): <target config>
 
 The target configuration options are varied, from the simple tunnel configurations through detailed multi-line configurations to multi-server configurations.
 
