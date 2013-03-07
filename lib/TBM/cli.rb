@@ -41,7 +41,8 @@ module TBM
 					machine.bore
 				end
 			else
-				puts "Cannot parse configuration:\n\t#{config.errors.join('\n\t')}"
+				formatted_errors = config.errors.join( "\n\t" )
+				puts "Cannot parse configuration. Errors:\n\t#{formatted_errors}\n"
 			end
 		end
 
