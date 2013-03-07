@@ -7,10 +7,7 @@ layout: default
 
 This was mostly a stablization and infrastructure release. It included:
 - A shorter syntax for adding aliases to a target
-- Setting TBM (and badging the README) in:
-    - Travis CI
-    - Gemnasium
-    - Code Climate
+- Setting TBM (and badging the README) in Travis, Gemnasium and Code Climate
 - Refactoring on the codebase to reduce complexity
 - Updating the Net::SSH dependency
 - Documenting the Configuration file format
