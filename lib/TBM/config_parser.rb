@@ -215,11 +215,11 @@ module TBM
 		def self.remote_tunnel( target, remote_host, tunnel_config, config )
 			case tunnel_config
 			when Fixnum
-				config.errors << validate_and_add( tunnel_config, tunnel_config, target, :remote_host => remote_host )
+				config.errors.concat validate_and_add( tunnel_config, tunnel_config, target, :remote_host => remote_host )
 			when String
 				case tunnel_config 
 				when PORT_PATTERN
-					config.errors << validate_and_add( tunnel_config.to_i, tunnel_config, target, :remote_host => remote_host )
+					config.errors.concat validate_and_add( tunnel_config.to_i, tunnel_config, target, :remote_host => remote_host )
 				when PORTPORT_PATTERN
 					config.errors.concat validate_and_add( $1.to_i, tunnel_config, target, :remote_host => remote_host, :remote_port => $2.to_i )
 				else
