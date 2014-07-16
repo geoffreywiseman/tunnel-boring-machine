@@ -47,7 +47,7 @@ module TBM
 					config.errors << "Cannot parse TBM configuration of type: #{config_data.class}"
 				end
 			else
-				config.errors << "No configuration file found. Specify your tunnels in YAML form in: ~/.tunnels"
+				config.errors << "No configuration file found. Specify your tunnels in YAML form in: ~/.tbm"
 			end
 			return config
 		rescue Psych::SyntaxError => pse
