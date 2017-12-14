@@ -16,8 +16,10 @@ module TBM
 
 		# Parses the command-line arguments by seeking targets, and print errors/usage if necessary.
 		def parse
-			if ARGV.empty? then 
-				print_targets "SYNTAX: tbm <targets>\n\nWhere <targets> is a comma-separated list of:" 
+			if ARGV.empty?
+				print_targets "SYNTAX: tbm <targets>\n\nWhere <targets> is a comma-separated list of:"
+			elsif ARGV == ['--version']
+				puts "Tunnel Boring Machine v#{VERSION}"
 			else
 				parse_targets( ARGV )
 			end
