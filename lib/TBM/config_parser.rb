@@ -34,7 +34,7 @@ module TBM
 		\))?\s*$/x 																	# end of parenthesized aliases
 
 
-		# Parses the tunnel boring machine configuration to get a list of targets which can 
+		# Parses the tunnel boring machine configuration to get a list of targets which can
 		# be invoked to bore tunnels.
 		#
 		# @return [Config] the parsed configuration for TBM
@@ -123,7 +123,7 @@ module TBM
 
 		def self.configure_target( target, target_config, config )
 			case target_config
-			when Fixnum, String
+			when Integer, String
 				tunnel( target, target_config, config )
 			when Array
 				target_config.each { |tunnel_config| tunnel(target, tunnel_config, config) }
@@ -140,10 +140,10 @@ module TBM
 
 		def self.tunnel( target, tunnel_config, config )
 			case tunnel_config
-			when Fixnum
+			when Integer
 					config.errors.concat validate_and_add( tunnel_config, tunnel_config, target )
 			when String
-				case tunnel_config 
+				case tunnel_config
 				when PORT_PATTERN
 					config.errors.concat validate_and_add( tunnel_config.to_i, tunnel_config, target )
 				when PORTPORT_PATTERN
@@ -198,10 +198,10 @@ module TBM
 				else
 					target.add_alias( attribute_value.to_s )
 				end
-			else 
+			else
 				remote_host = attribute_name.to_s
 				case attribute_value
-				when Fixnum, String
+				when Integer, String
 					remote_tunnel( target, remote_host, attribute_value, config )
 				when Array
 					attribute_value.each { |tunnel_config| remote_tunnel(target, remote_host, tunnel_config, config) }
@@ -216,10 +216,10 @@ module TBM
 
 		def self.remote_tunnel( target, remote_host, tunnel_config, config )
 			case tunnel_config
-			when Fixnum
+			when Integer
 				config.errors.concat validate_and_add( tunnel_config, tunnel_config, target, :remote_host => remote_host )
 			when String
-				case tunnel_config 
+				case tunnel_config
 				when PORT_PATTERN
 					config.errors.concat validate_and_add( tunnel_config.to_i, tunnel_config, target, :remote_host => remote_host )
 				when PORTPORT_PATTERN
