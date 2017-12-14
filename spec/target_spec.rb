@@ -6,11 +6,11 @@ describe TBM::Target do
 		subject { TBM::Target.new( 'Foo','host','user' ) }
 
 		it "should have name 'Foo'" do
-			subject.should have_name( 'Foo' )
+			expect(subject).to have_name( 'Foo' )
 		end
 
 		it "should describe itself as 'Foo'" do
-			subject.to_s.should eq('Foo')
+			expect(subject.to_s).to eq('Foo')
 		end
 
 		context "and aliases 'Bar', 'Baz'" do
@@ -20,19 +20,19 @@ describe TBM::Target do
 			end
 
 			it "should have name 'Foo'" do
-				subject.should have_name( 'Foo' )
+				expect(subject).to have_name( 'Foo' )
 			end
 
 			it "should have name 'Bar'" do
-				subject.should have_name( 'Foo' )
+				expect(subject).to have_name( 'Foo' )
 			end
 
 			it "should have name 'Baz'" do
-				subject.should have_name( 'Foo' )
+				expect(subject).to have_name( 'Foo' )
 			end
 
 			it "should describe itself as 'Foo (Bar, Baz)'" do
-				subject.to_s.should eq('Foo (Bar, Baz)')
+				expect(subject.to_s).to eq('Foo (Bar, Baz)')
 			end
 
 		end

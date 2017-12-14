@@ -1,3 +1,5 @@
+$LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
+
 require 'rake/clean'
 require 'rake/packagetask'
 require 'rspec/core/rake_task'

@@ -1,10 +1,10 @@
 def stub_messages
   @messages = []
-  $stdout.stub( :write ) { |message| @messages << message  }
+  allow($stdout).to receive( :write ) { |message| @messages << message  }
 end
 
 def surpress_messages
-  $stdout.stub( :write )
+  allow($stdout).to receive( :write )
 end
 
 RSpec::Matchers.define :include_match do |expected|

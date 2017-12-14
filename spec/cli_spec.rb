@@ -8,9 +8,9 @@ describe CommandLineInterface do
 	subject { CommandLineInterface.new config }
 
 	before do
-		TBM::ConfigParser.stub( :parse ) { config }
-		config.stub( :valid? ) { config_valid }
-		config.stub( :errors ) { config_errors }
+		allow(TBM::ConfigParser).to receive( :parse ) { config }
+		allow(config).to receive( :valid? ) { config_valid }
+		allow(config).to receive( :errors ) { config_errors }
 		stub_messages
 	end
 
@@ -19,8 +19,8 @@ describe CommandLineInterface do
 		let(:config_errors) { ["Invalid Config"] }
 		it "should print config errors" do
 			CommandLineInterface.parse_and_run
-			@messages.should include_match(/Cannot parse config/)
-			@messages.should include_match(/Invalid Config/)
+			expect(@messages).to include_match(/Cannot parse config/)
+			expect(@messages).to include_match(/Invalid Config/)
 		end
 	end
 
@@ -29,14 +29,14 @@ describe CommandLineInterface do
 
 		before do
 			ARGV.clear
-			config.stub(:each_target).and_yield( 'alpha' ).and_yield( 'beta' )
+			allow(config).to receive(:each_target).and_yield( 'alpha' ).and_yield( 'beta' )
 		end
 
 		it "should print syntax and targets" do
 			CommandLineInterface.parse_and_run
-			@messages.should include_match( /SYNTAX/ )
-			@messages.should include_match( /alpha/ )
-			@messages.should include_match( /beta/ )
+			expect(@messages).to include_match( /SYNTAX/ )
+			expect(@messages).to include_match( /alpha/ )
+			expect(@messages).to include_match( /beta/ )
 		end
 	end
 
@@ -45,7 +45,7 @@ describe CommandLineInterface do
 
 		before do
 			ARGV.clear.push( 'target-name' )
-			config.stub(:get_target).with('target-name') { target }
+			allow(config).to receive(:get_target).with('target-name') { target }
 		end
 
 		context "matching a config target" do
@@ -55,13 +55,13 @@ describe CommandLineInterface do
 			let(:machine) { double( Machine ) }
 
 			before do
-				target.stub(:host) { thost }
-				target.stub(:username) { tuser }
+				allow(target).to receive(:host) { thost }
+				allow(target).to receive(:username) { tuser }
 			end
 
 			it "should start Tunnel Boring Machine" do
-				Machine.stub(:new) { machine }
-				machine.should_receive(:bore)
+				allow(Machine).to receive(:new) { machine }
+				expect(machine).to receive(:bore)
 				CommandLineInterface.parse_and_run
 			end
 		end
@@ -70,17 +70,17 @@ describe CommandLineInterface do
 			let(:target) { nil }
 
 			before do
-				config.stub(:each_target).and_yield( 'another-target' )
+				allow(config).to receive(:each_target).and_yield( 'another-target' )
 			end
 
 			it "should say 'Cannot find target'" do
 				CommandLineInterface.parse_and_run
-				@messages.should include_match( /Cannot find target/ )
+				expect(@messages).to include_match( /Cannot find target/ )
 			end
 
 			it "should print target list" do
 				CommandLineInterface.parse_and_run
-				@messages.should include_match( /another-target/ )
+				expect(@messages).to include_match( /another-target/ )
 			end
 		end
 	end
@@ -90,8 +90,8 @@ describe CommandLineInterface do
 
 		before do
 			ARGV.clear.push( 'alpha', 'beta' )
-			config.stub(:get_target).with('alpha') { alpha }
-			config.stub(:get_target).with('beta') { beta }
+			allow(config).to receive(:get_target).with('alpha') { alpha }
+			allow(config).to receive(:get_target).with('beta') { beta }
 		end
 
 		context "matching configured targets with same host and user" do
@@ -100,8 +100,8 @@ describe CommandLineInterface do
 			let(:machine) { double( Machine ) }
 
 			it "should start boring machine" do
-				Machine.stub(:new) { machine }
-				machine.should_receive(:bore)
+				allow(Machine).to receive(:new) { machine }
+				expect(machine).to receive(:bore)
 				CommandLineInterface.parse_and_run
 			end
 		end
@@ -111,15 +111,15 @@ describe CommandLineInterface do
 			let(:beta) { double Target }
 
 			before do
-				alpha.stub(:host) { 'host1' }
-				alpha.stub(:username) { 'username' }
-				beta.stub(:host) { 'host2' }
-				beta.stub(:username) { 'username' }
+				allow(alpha).to receive(:host) { 'host1' }
+				allow(alpha).to receive(:username) { 'username' }
+				allow(beta).to receive(:host) { 'host2' }
+				allow(beta).to receive(:username) { 'username' }
 			end
 
 			it "should say 'Can't combine targets'" do
 				CommandLineInterface.parse_and_run
-				@messages.should include_match(/Can't combine targets/)
+				expect(@messages).to include_match(/Can't combine targets/)
 			end
 		end
 
@@ -128,15 +128,15 @@ describe CommandLineInterface do
 			let(:beta) { double Target }
 
 			before do
-				alpha.stub(:host) { 'host' }
-				alpha.stub(:username) { 'username1' }
-				beta.stub(:host) { 'host' }
-				beta.stub(:username) { 'username2' }
+				allow(alpha).to receive(:host) { 'host' }
+				allow(alpha).to receive(:username) { 'username1' }
+				allow(beta).to receive(:host) { 'host' }
+				allow(beta).to receive(:username) { 'username2' }
 			end
 
 			it "should say 'Can't combine targets'" do
 				CommandLineInterface.parse_and_run
-				@messages.should include_match(/Can't combine targets/)
+				expect(@messages).to include_match(/Can't combine targets/)
 			end
 		end
 
@@ -145,18 +145,18 @@ describe CommandLineInterface do
 			let(:beta) { nil }
 
 			before do
-				config.stub(:each_target).and_yield( 'gamma' ).and_yield( 'delta' )
+				allow(config).to receive(:each_target).and_yield( 'gamma' ).and_yield( 'delta' )
 			end
 
 			it "should say 'Cannot find target'" do
 				CommandLineInterface.parse_and_run
-				@messages.should include_match(/Cannot find target/)
+				expect(@messages).to include_match(/Cannot find target/)
 			end
 
 			it "should print target list" do
 				CommandLineInterface.parse_and_run
-				@messages.should include_match( /gamma/ )
-				@messages.should include_match( /delta/ )
+				expect(@messages).to include_match( /gamma/ )
+				expect(@messages).to include_match( /delta/ )
 			end
 		end
 	end
