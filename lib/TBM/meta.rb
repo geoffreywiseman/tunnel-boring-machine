@@ -2,5 +2,5 @@
 module TBM
   APP_NAME = "Tunnel Boring Machine"
   VERSION = "0.4.0"
-  RELEASE_DATE = '2013-03-07'
+  RELEASE_DATE = '2017-12-14'
 end
