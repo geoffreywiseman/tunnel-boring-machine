@@ -43,8 +43,8 @@ module TBM
 					machine.bore
 				end
 			else
-				formatted_errors = config.errors.join( "\n\t" )
-				puts "Cannot parse configuration. Errors:\n\t#{formatted_errors}\n"
+				joined_errors = config.errors.join("\n\t")
+				puts "Cannot parse configuration:\n\t#{joined_errors}"
 			end
 		end
 
@@ -55,7 +55,7 @@ module TBM
 			missing_targets = []
 			targets.each do |target_name|
 				target = @config.get_target( target_name )
-				if target.nil? then
+				if target.nil?
 					missing_targets << target_name
 				else
 					found_targets << target
