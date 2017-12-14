@@ -14,7 +14,7 @@ module TBM
 		GATEWAY_PATTERN = /^([^@]+)(@([^@]+))?$/
 
 		# Pattern for a tunnel with a remote host followed by a port (example.com:3333)
-		HOSTPORT_PATTERN = /^([a-zA-Z0-9\.\-]+):(\d{1,5})$/
+		HOSTPORT_PATTERN = /^([a-zA-Z0-9.\-]+):(\d{1,5})$/
 
 		# Pattern for a tunnel with a remote host and local and remote ports (1234:example.com:4321)
 		PORTHOSTPORT_PATTERN = /^(\d{1,5}):([a-zA-Z0-9\.\-]+):(\d{1,5})$/

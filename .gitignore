@@ -3,3 +3,4 @@ Gemfile.lock
 *.sublime-workspace
 pkg
 /.idea
+/.bundle
