@@ -4,9 +4,11 @@ require 'tbm'
 
 module TBM
 	class ConfigParser
+		# The configuration file before expansion
+		CONFIG_FILE = '~/.tbm'
 
 		# The configuration file used for parsing config.
-		CONFIG_FILE = File.expand_path( '~/.tbm' )
+		EXPANDED_CONFIG_FILE = File.expand_path( CONFIG_FILE )
 
 		# Pattern for Gateway Server with Optional Username
 		GATEWAY_PATTERN = /^([^@]+)(@([^@]+))?$/
@@ -38,8 +40,8 @@ module TBM
 		# @return [Config] the parsed configuration for TBM
 		def self.parse
 			config = Config.new
-			if File.file? CONFIG_FILE
-				config_data = YAML.load_file( CONFIG_FILE )
+			if File.file? EXPANDED_CONFIG_FILE
+				config_data = YAML.load_file( EXPANDED_CONFIG_FILE )
 				case config_data
 				when Hash
 					parse_gateways( config_data, config ) if config_data.is_a? Hash
@@ -47,7 +49,7 @@ module TBM
 					config.errors << "Cannot parse TBM configuration of type: #{config_data.class}"
 				end
 			else
-				config.errors << "No configuration file found. Specify your tunnels in YAML form in: ~/.tbm"
+				config.errors << "No configuration file found. Specify your tunnels in YAML form in: #{CONFIG_FILE}"
 			end
 			return config
 		rescue Psych::SyntaxError => pse
@@ -215,11 +217,11 @@ module TBM
 		def self.remote_tunnel( target, remote_host, tunnel_config, config )
 			case tunnel_config
 			when Integer
-				config.errors << validate_and_add( tunnel_config, tunnel_config, target, :remote_host => remote_host )
+				config.errors.concat validate_and_add( tunnel_config, tunnel_config, target, :remote_host => remote_host )
 			when String
 				case tunnel_config
 				when PORT_PATTERN
-					config.errors << validate_and_add( tunnel_config.to_i, tunnel_config, target, :remote_host => remote_host )
+					config.errors.concat validate_and_add( tunnel_config.to_i, tunnel_config, target, :remote_host => remote_host )
 				when PORTPORT_PATTERN
 					config.errors.concat validate_and_add( $1.to_i, tunnel_config, target, :remote_host => remote_host, :remote_port => $2.to_i )
 				else

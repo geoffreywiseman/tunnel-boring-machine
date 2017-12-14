@@ -6,7 +6,7 @@ Tunnel Boring Machine is a ruby application to manage SSH tunnels, which you can
 I use SSH tunnels on a regular basis to access resources at client sites that are not exposed directly to the internet as a whole. Managing those tunnels as a series of bash scripts or aliases became cumbersome. I wanted / needed something better, and the tunnel boring machine has evolved from that need.
 
 ## Current Status ##
-It's pretty early days. I'm using this myself, but I haven't gone out of my way to share it with anyone because so much is still in flux. I imagine it will be starting to stabilize soon into something I might call a 'beta' product. At the moment, it's probably more of an 'alpha'.
+It's pretty early days. I'm using this myself, and I've shared it so other people can use it, but its advantages over a shell script are still fairly thin. There are some enhancements that I have planned that might make the case much stronger, but we'll see.
 
 ## Installing ##
 It is bundled as a ruby gem, so if you have Ruby and RubyGems installed, simply run:
@@ -37,9 +37,7 @@ An example configuration file follows:
         alias: [ ju, ussi ]
       qa:
         tunnel: 8080
-      staging:
-        alias: [ stage, st ]
-        tunnel: 8080:80
+      staging (stage, st): 8080:80
       5250: 8023:as400:23
       webfacing: as400:10905
 
