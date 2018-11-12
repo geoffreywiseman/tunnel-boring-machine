@@ -70,6 +70,13 @@ describe ConfigParser do
 				end
 			end
 
+			context "with a malformed gateway" do
+				let(:gateway) { "remote@user@gateway.example.com" }
+				let(:targets) { { 'web' => 80 } }
+				it { is_expected.not_to be_valid }
+				specify { expect(subject.errors).to include("Cannot parse gateway name: remote@user@gateway.example.com") }
+			end
+
 			context "keyed by a non-String" do
 				let(:gateway) { Array.new }
 				let(:targets) { Hash.new }
@@ -214,7 +221,7 @@ end
 RSpec::Matchers.define :have_tunnel do |expected|
 	match do |actual|
 		expect(actual).not_to be_nil
-		expect(actual.tunnels.size).to eql(1) 
+		expect(actual.tunnels.size).to eql(1)
 		tunnel = actual.tunnels[0]
 		expected.each do |k,v|
 			expect(tunnel.send(k)).to eql(v)

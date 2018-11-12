@@ -72,14 +72,14 @@ module TBM
 
 		def self.parse_gateway( gateway_name, targets, config )
 			if String === gateway_name
-				(gateway_host, gateway_username) = parse_gateway_name( gateway_name )
+				(gateway_host, gateway_username) = parse_gateway_name( gateway_name, config )
 				parse_targets( gateway_host, gateway_username, targets, config ) unless gateway_host.nil?
 			else
 				config.errors << "Cannot parse gateway name: #{gateway_name} (#{gateway_name.class})"
 			end
 		end
 
-		def self.parse_gateway_name( gateway_name )
+		def self.parse_gateway_name( gateway_name, config )
 			if GATEWAY_PATTERN =~ gateway_name
 				if $3.nil?
 					[$1,Etc.getlogin]
